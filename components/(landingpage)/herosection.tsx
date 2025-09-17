@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Phone, Sparkles, Zap, Globe, Bot } from "lucide-react";
+import Link from "next/link";
 
 export function HeroSection() {
   const [name, setName] = useState("");
@@ -16,6 +17,11 @@ export function HeroSection() {
   ];
 
   const handleGetCall = () => {
+    // Store the form data for pre-filling the test page
+    if (typeof window !== 'undefined') {
+      const formData = { name, country, phoneNumber };
+      sessionStorage.setItem('demoCallData', JSON.stringify(formData));
+    }
     console.log("Demo call requested:", { name, country, phoneNumber });
   };
 
@@ -116,15 +122,17 @@ export function HeroSection() {
                   </div>
                 </div>
 
-                <Button
-                  size="lg"
-                  className="w-full h-12 text-base hover:scale-105 transition-transform animate-pulse-glow"
-                  onClick={handleGetCall}
-                  disabled={!name || !country || !phoneNumber}
-                >
-                  <Phone className="h-5 w-5 mr-2 animate-float" />
-                  Get a Call
-                </Button>
+                <Link href={!name || !country || !phoneNumber ? "#" : "/test-call"} className="w-full">
+                  <Button
+                    size="lg"
+                    className="w-full h-12 text-base hover:scale-105 transition-transform animate-pulse-glow"
+                    onClick={handleGetCall}
+                    disabled={!name || !country || !phoneNumber}
+                  >
+                    <Phone className="h-5 w-5 mr-2 animate-float" />
+                    Get a Call
+                  </Button>
+                </Link>
               </div>
 
               <p className="text-sm text-muted-foreground text-center">
@@ -149,7 +157,4 @@ export function HeroSection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
+      </
