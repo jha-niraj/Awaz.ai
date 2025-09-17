@@ -1,6 +1,7 @@
 {
-  "name": "mpsolutions",
+  "name": "awaz-ai",
   "version": "0.1.0",
+  "description": "Multilingual voice outreach platform for small businesses in India and Nepal",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -21,8 +21,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-	title: "Next Starter Kit",
-	description: "All medicine info at one place",
+	title: "Awaz.ai",
+	description: "We’re building the “voice campaigns for SMBs” platform — simple, multilingual, compliant, and affordable.",
 };
 
 export default function RootLayout({

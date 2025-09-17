@@ -1,118 +1,142 @@
-# Next Auth Kit
+# Awaz.ai - Multilingual Voice Outreach Platform
 
-A clean, reliable starting point for integrating Next.js authentication with Prisma. This kit eliminates the complexity and common pitfalls when combining `next-auth` with `prisma`, providing developers with a streamlined setup for rapid development.
+🎯 **The easiest way for small businesses in India to talk to all their customers at once — in their own language.**
 
-## ✨ Features
+Awaz.ai is a revolutionary multilingual voice outreach platform that enables small and medium businesses to reach hundreds of customers instantly with personalized voice calls in local languages. No more manual calling, no language barriers, just results.
 
-- **🚀 Fast Integration** - Streamlined setup process for rapid development
-- **🔧 Dependency Free** - Eliminates common integration headaches
-- **🛡️ Prisma Ready** - Seamless database integration included
-- **⭐ Production Ready** - Battle-tested and reliable foundation
+## ✨ Key Features
+
+- 🗣️ **10+ Indian Languages** - Hindi, Bengali, Marathi, Tamil, Telugu, and more
+- 📞 **Automated Voice Calls** - Reach 1000+ customers in minutes
+- 🎯 **Smart Personalization** - Insert names, amounts, dates automatically
+- 📊 **Real-time Analytics** - Track delivery rates and campaign performance
+- 🔒 **Compliance Ready** - DLT integration and consent management
+- 🔗 **Easy Integration** - Google Sheets, CSV uploads, API access
+
+## 🎯 Perfect For
+
+- **Kirana Shops** → Payment reminders, promotions
+- **Clinics** → Appointment confirmations, prescription alerts  
+- **Schools** → Fee reminders, exam notifications
+- **Salons** → Booking confirmations, follow-ups
+- **NBFCs** → EMI reminders, collection calls
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js 18+ 
-- npm, yarn, or pnpm
+- Node.js 18+
+- PostgreSQL database
+- ElevenLabs API key
+- Twilio account
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone and install**
    ```bash
-   git clone https://github.com/jha-niraj/NextJS-starter-auth
-   cd NextJS-starter-auth
+   git clone https://github.com/shunyatech/awaz.ai.git
+   cd awaz.ai
+   npm install --legacy-peer-deps
    ```
 
-2. **Install dependencies**
-   ```bash
-   npm install(use --legacy-peer-deps if fails)
-   # or
-   yarn install
-   # or
-   pnpm install
-   ```
-
-3. **Set up environment variables**
+2. **Environment setup**
    ```bash
    cp .env.example .env.local
    ```
    
-   Edit `.env.local` with your configuration:
+   Configure your `.env.local`:
    ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/mydatabase or the neon one"
-   NEXTAUTH_URL="http://localhost:3000 or your production URL"
+   # Database
+   DATABASE_URL="postgresql://user:password@localhost:5432/awaz_db"
+   
+   # Authentication
+   NEXTAUTH_URL="http://localhost:3000"
    NEXTAUTH_SECRET="your-secret-key"
-   NEXT_GOOGLE_CLIENT_ID="your-google-client-id"
-   NEXT_GOOGLE_CLIENT_SECRET="your-google-client-secret"
-   RESEND_API_KEY="your-resend-api-key"
+   
+   # OAuth
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_SECRET_ID="your-google-client-secret"
+   
+   # Voice & Calling
+   ELEVENLABS_API_KEY="your-elevenlabs-key"
+   TWILIO_ACCOUNT_SID="your-twilio-sid"
+   TWILIO_AUTH_TOKEN="your-twilio-token"
+   
+   # Email
+   RESEND_API_KEY="your-resend-key"
    ```
 
-4. **Set up the database**
+3. **Database setup**
    ```bash
    npx prisma generate
    npx prisma db push
    ```
 
-5. **Run the development server**
+4. **Start development**
    ```bash
    npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
    ```
 
-6. **Open your browser**
+5. **Access the app**
    
-   Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+   Open [http://localhost:3000](http://localhost:3000) to start building voice campaigns.
 
-## 🛠️ Tech Stack
+## 🏗️ Tech Stack
 
-- **Framework** - Next.js 14+
-- **Authentication** - NextAuth.js
-- **Database** - Prisma ORM
-- **Styling** - Tailwind CSS
-- **Language** - TypeScript
+- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS
+- **Backend**: Next.js API Routes + Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: NextAuth.js v5
+- **Voice Engine**: ElevenLabs TTS
+- **Calling**: Twilio Voice API
+- **Deployment**: Vercel
 
-## 📝 Configuration
+## 📱 Core Workflow
 
-### Database Setup
+1. **Upload Contacts** → CSV, Excel, or Google Sheets
+2. **Write Script** → "Hello {{name}}, your payment of ₹{{amount}} is due"
+3. **Choose Voice** → Select language and voice type
+4. **Preview & Test** → Hear how it sounds
+5. **Launch Campaign** → Reach all customers instantly
+6. **Track Results** → Monitor delivery and engagement
 
-This kit supports multiple database providers. Update your `schema.prisma` file according to your preferred database:
+## 🌍 Supported Languages
 
-```prisma
-// For PostgreSQL
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+| Language | Code | Voice Quality |
+|----------|------|---------------|
+| English  | en   | ⭐⭐⭐⭐⭐ |
+| Hindi    | hi   | ⭐⭐⭐⭐⭐ |
+| Bengali  | bn   | ⭐⭐⭐⭐ |
+| Marathi  | mr   | ⭐⭐⭐⭐ |
+| Tamil    | ta   | ⭐⭐⭐⭐ |
+| Telugu   | te   | ⭐⭐⭐⭐ |
+| Kannada  | kn   | ⭐⭐⭐⭐ |
+| Nepali   | ne   | ⭐⭐⭐⭐ |
 
-// For MySQL
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
+## 📊 Pricing (India)
 
-// For SQLite (development)
-datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-}
+```
+🆓 Free Trial: 100 calls free
+💼 Starter: ₹999/month (1,000 calls)
+🚀 Growth: ₹2,999/month (5,000 calls)
+🏢 Business: ₹9,999/month (25,000 calls)
 ```
 
-### Authentication Providers
+## 🔗 Integrations
 
-Configure your authentication providers in `app/api/auth/[...nextauth].js` or add new ones as needed.
+- **Google Sheets** - Import contacts directly
+- **Zapier/Make** - Automate workflows
+- **CRM Systems** - HubSpot, Zoho integration
+- **Payment Gateways** - Razorpay, Stripe
+- **E-commerce** - Shopify, WooCommerce
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for details.
 
-## ⭐ Support
+## 📄 License
 
-If this project helped you, please consider giving it a star on GitHub!
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ by [Niraj Jha](https://github.com/jha-niraj)**
+**Built with ❤️ for Indian SMBs | [Awaz.ai](https://awaz.ai) | [Support](mailto:support@awaz.ai)**
