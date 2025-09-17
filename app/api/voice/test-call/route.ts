@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateSpeech, generateTestMessage } from '@/lib/elevenlabs';
 import { makeVoiceCall, validatePhoneNumber } from '@/lib/twilio';
+import { makeConversationalCall, generateTestVariables } from '@/lib/elevenlabs-conversation';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { phoneNumber, name, language = 'en', useElevenLabs = true } = body;
+    const { 
+      phoneNumber, 
+      name, 
+      language = 'en', 
+      useElevenLabs = true, 
+      useConversationalAI = false,
+      businessName = 'Awaz.ai',
+      callPurpose = 'Testing voice platform',
+      customVariables = {}
+    } = body;
 
     // Validate required fields
     if (!phoneNumber) {
@@ -25,15 +35,60 @@ export async function POST(request: NextRequest) {
     }
 
     const customerName = name || 'Friend';
-    const testMessage = generateTestMessage(customerName);
 
     console.log(`Initiating test call to ${phoneValidation.formatted} for ${customerName}`);
+    console.log(`Mode: ${useConversationalAI ? 'Conversational AI' : 'Simple TTS'}`);
 
     let callResult;
 
-    if (useElevenLabs) {
-      // Use ElevenLabs for high-quality TTS
-      console.log('Generating speech with ElevenLabs...');
+    if (useConversationalAI) {
+      // Use ElevenLabs Conversational AI Agent
+      console.log('Using conversational AI mode...');
+      
+      const variables = {
+        business_name: businessName,
+        customer_name: customerName,
+        call_purpose: callPurpose,
+        topic: 'voice platform testing',
+        ...customVariables,
+        ...generateTestVariables(customerName, businessName),
+      };
+
+      callResult = await makeConversationalCall({
+        to: phoneValidation.formatted!,
+        customVariables: variables,
+      });
+
+      if (!callResult.success) {
+        return NextResponse.json(
+          { success: false, error: callResult.error },
+          { status: 500 }
+        );
+      }
+
+      console.log(`Conversational call initiated: ${callResult.conversationId}`);
+
+      return NextResponse.json({
+        success: true,
+        message: 'Conversational AI call initiated successfully',
+        data: {
+          conversationId: callResult.conversationId,
+          phoneNumber: phoneValidation.formatted,
+          name: customerName,
+          language: language,
+          businessName: businessName,
+          callPurpose: callPurpose,
+          variables: variables,
+          status: callResult.status,
+          mode: 'conversational-ai',
+        },
+      });
+
+    } else if (useElevenLabs) {
+      // Use ElevenLabs for high-quality TTS (Legacy mode)
+      console.log('Using ElevenLabs TTS mode...');
+      
+      const testMessage = generateTestMessage(customerName);
       
       const voiceResult = await generateSpeech({
         text: testMessage,
@@ -56,6 +111,10 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Use Twilio's built-in TTS directly
+      console.log('Using Twilio TTS mode...');
+      
+      const testMessage = generateTestMessage(customerName);
+      
       callResult = await makeVoiceCall({
         to: phoneValidation.formatted!,
         message: testMessage,
@@ -80,8 +139,9 @@ export async function POST(request: NextRequest) {
         phoneNumber: phoneValidation.formatted,
         name: customerName,
         language: language,
-        message: testMessage,
+        message: generateTestMessage(customerName),
         status: callResult.status,
+        mode: useElevenLabs ? 'elevenlabs-tts' : 'twilio-tts',
       },
     });
 
@@ -103,6 +163,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     const isElevenLabsConfigured = !!process.env.ELEVENLABS_API_KEY;
+    const isAgentConfigured = !!process.env.ELEVENLABS_AGENT_ID;
     const isTwilioConfigured = !!(
       process.env.TWILIO_ACCOUNT_SID && 
       process.env.TWILIO_AUTH_TOKEN && 
@@ -116,12 +177,17 @@ export async function GET() {
           configured: isElevenLabsConfigured,
           status: isElevenLabsConfigured ? 'ready' : 'missing_api_key',
         },
+        conversationalAI: {
+          configured: isElevenLabsConfigured && isAgentConfigured,
+          status: isElevenLabsConfigured && isAgentConfigured ? 'ready' : 'missing_agent_id',
+        },
         twilio: {
           configured: isTwilioConfigured,
           status: isTwilioConfigured ? 'ready' : 'missing_credentials',
         },
       },
       ready: isElevenLabsConfigured && isTwilioConfigured,
+      conversationalAI: isElevenLabsConfigured && isAgentConfigured,
     });
 
   } catch (error) {

@@ -14,8 +14,10 @@ import { toast } from 'sonner';
 
 interface ServiceStatus {
   elevenlabs: { configured: boolean; status: string };
+  conversationalAI: { configured: boolean; status: string };
   twilio: { configured: boolean; status: string };
   ready: boolean;
+  conversationalAI: boolean;
 }
 
 interface CallResult {
@@ -43,6 +45,9 @@ export default function TestCallPage() {
   const [name, setName] = useState('');
   const [language, setLanguage] = useState('en');
   const [useElevenLabs, setUseElevenLabs] = useState(true);
+  const [useConversationalAI, setUseConversationalAI] = useState(false);
+  const [businessName, setBusinessName] = useState('Awaz.ai');
+  const [callPurpose, setCallPurpose] = useState('Testing voice platform');
   const [isLoading, setIsLoading] = useState(false);
   const [serviceStatus, setServiceStatus] = useState<ServiceStatus | null>(null);
   const [callResult, setCallResult] = useState<CallResult | null>(null);
@@ -108,6 +113,9 @@ export default function TestCallPage() {
           name: name.trim() || 'Friend',
           language,
           useElevenLabs,
+          useConversationalAI,
+          businessName: businessName.trim() || 'Awaz.ai',
+          callPurpose: callPurpose.trim() || 'Testing voice platform',
         }),
       });
 
@@ -182,6 +190,13 @@ export default function TestCallPage() {
                     <span className="font-medium">ElevenLabs TTS</span>
                     <Badge variant={serviceStatus.services.elevenlabs.configured ? 'default' : 'destructive'}>
                       {serviceStatus.services.elevenlabs.configured ? 'Connected' : 'Not Configured'}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">Conversational AI</span>
+                    <Badge variant={serviceStatus.services.conversationalAI.configured ? 'default' : 'destructive'}>
+                      {serviceStatus.services.conversationalAI.configured ? 'Agent Ready' : 'Agent Not Configured'}
                     </Badge>
                   </div>
                   
@@ -266,18 +281,69 @@ export default function TestCallPage() {
                   </Select>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="useElevenLabs"
-                    checked={useElevenLabs}
-                    onChange={(e) => setUseElevenLabs(e.target.checked)}
-                    disabled={isLoading}
-                    className="rounded"
-                  />
-                  <Label htmlFor="useElevenLabs" className="text-sm">
-                    Use ElevenLabs for high-quality TTS (recommended)
-                  </Label>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="useConversationalAI"
+                      checked={useConversationalAI}
+                      onChange={(e) => {
+                        setUseConversationalAI(e.target.checked);
+                        if (e.target.checked) setUseElevenLabs(true); // AI requires ElevenLabs
+                      }}
+                      disabled={isLoading || !serviceStatus?.conversationalAI}
+                      className="rounded"
+                    />
+                    <Label htmlFor="useConversationalAI" className="text-sm">
+                      <span className="font-medium text-primary">Use Conversational AI</span> (Interactive conversation)
+                    </Label>
+                  </div>
+                  
+                  {useConversationalAI && (
+                    <div className="space-y-4 pl-6 border-l-2 border-primary/20">
+                      <div className="space-y-2">
+                        <Label htmlFor="businessName">Business Name</Label>
+                        <Input
+                          id="businessName"
+                          type="text"
+                          placeholder="Your Business Name"
+                          value={businessName}
+                          onChange={(e) => setBusinessName(e.target.value)}
+                          disabled={isLoading}
+                          className="text-base"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="callPurpose">Call Purpose</Label>
+                        <Input
+                          id="callPurpose"
+                          type="text"
+                          placeholder="Why are you calling?"
+                          value={callPurpose}
+                          onChange={(e) => setCallPurpose(e.target.value)}
+                          disabled={isLoading}
+                          className="text-base"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {!useConversationalAI && (
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="useElevenLabs"
+                        checked={useElevenLabs}
+                        onChange={(e) => setUseElevenLabs(e.target.checked)}
+                        disabled={isLoading}
+                        className="rounded"
+                      />
+                      <Label htmlFor="useElevenLabs" className="text-sm">
+                        Use ElevenLabs for high-quality TTS (recommended)
+                      </Label>
+                    </div>
+                  )}
                 </div>
 
                 <Button
