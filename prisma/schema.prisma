@@ -9,8 +9,32 @@ datasource db {
 
 enum Role {
     USER
-    SELLER
+    BUSINESS_OWNER
     ADMIN
+}
+
+enum BusinessType {
+    KIRANA_SHOP
+    CLINIC
+    SCHOOL
+    SALON
+    RESTAURANT
+    NBFC
+    COACHING_CENTER
+    SERVICE_PROVIDER
+    OTHER
+}
+
+enum PreferredLanguage {
+    ENGLISH
+    HINDI
+    BENGALI
+    MARATHI
+    TAMIL
+    TELUGU
+    KANNADA
+    NEPALI
+    URDU
 }
 
 model User {
@@ -23,6 +47,22 @@ model User {
     role                 Role      @default(USER)
     roleExplicitlyChosen Boolean   @default(false)
 	createdAt            DateTime  @default(now())
+    updatedAt            DateTime  @updatedAt
+
+    // Voice Platform Specific Fields
+    businessName         String?
+    businessType         BusinessType?
+    phoneNumber          String?
+    preferredLanguage    PreferredLanguage @default(ENGLISH)
+    industry             String?           // Free text for specific industry
+    location             String?           // City/State for regional customization
+    onboardingCompleted  Boolean   @default(false)
+    
+    // Usage tracking
+    callsUsed            Int       @default(0)
+    callsLimit           Int       @default(100)  // Free tier limit
+    subscriptionTier     String    @default("free") // free, starter, growth, business
+    subscriptionExpiry   DateTime?
 
     // Email verification
     verificationToken    String?   @unique
@@ -35,6 +75,8 @@ model User {
     accounts              Account[]
 
     @@index([email])
+    @@index([businessType])
+    @@index([preferredLanguage])
 }
 
 model Account {

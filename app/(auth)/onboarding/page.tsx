@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import { ArrowRight, ArrowLeft, CheckCircle, Users, Lightbulb, Play, SkipForward, Loader2 } from "lucide-react"
-import { completeOnboarding, redirectAfterOnboarding } from "@/actions/onboarding.actions"
-import { getCategories } from "@/actions/post.actions"
+// Temporarily disabled for build
+// import { completeOnboarding, redirectAfterOnboarding } from "@/actions/onboarding.actions"
+// import { getCategories } from "@/actions/post.actions"
 
 interface Category {
     id: string
@@ -18,13 +19,16 @@ interface Category {
     icon: string | null
 }
 
-// Fallback categories if database is empty
-const FALLBACK_CATEGORIES = [
-    { id: "tech", name: "Technology", icon: "💻", description: "Software, Hardware, AI, Web Development" },
-    { id: "business", name: "Business", icon: "🏢", description: "Startups, Business Models, Marketing" },
-    { id: "assignments", name: "Assignments", icon: "📚", description: "Academic Projects, Research, Studies" },
-    { id: "social-impact", name: "Social Impact", icon: "❤️", description: "Non-profit, Community, Sustainability" },
-    { id: "creative", name: "Creative", icon: "🎨", description: "Design, Art, Content, Media" },
+// Business types for voice outreach platform
+const BUSINESS_TYPES = [
+    { id: "kirana", name: "Kirana Shop", icon: "🛒", description: "Retail stores, grocery shops, local markets" },
+    { id: "clinic", name: "Clinic/Hospital", icon: "🏥", description: "Healthcare services, diagnostic labs, medical centers" },
+    { id: "school", name: "School/Coaching", icon: "🎓", description: "Educational institutions, coaching centers, training" },
+    { id: "salon", name: "Salon/Beauty", icon: "💄", description: "Beauty services, salons, spas, wellness centers" },
+    { id: "restaurant", name: "Restaurant/Food", icon: "🍽️", description: "Restaurants, cafes, food delivery, catering" },
+    { id: "nbfc", name: "Finance/NBFC", icon: "💰", description: "Loans, microfinance, financial services" },
+    { id: "service", name: "Service Provider", icon: "🔧", description: "Repairs, maintenance, professional services" },
+    { id: "other", name: "Other Business", icon: "🏪", description: "Any other type of business" },
 ]
 
 export default function OnboardingPage() {
@@ -33,9 +37,11 @@ export default function OnboardingPage() {
     const [categories, setCategories] = useState<Category[]>([])
     const [categoriesLoading, setCategoriesLoading] = useState(true)
     const [formData, setFormData] = useState({
-        userRole: "" as "SUBMITTER" | "VALIDATOR" | "BOTH" | "",
-        selectedCategories: [] as string[],
-        customCategory: "",
+        businessType: "" as string,
+        businessName: "",
+        location: "",
+        preferredLanguage: "ENGLISH" as string,
+        phoneNumber: "",
         watchedVideo: false
     })
 
@@ -46,18 +52,12 @@ export default function OnboardingPage() {
     const fetchCategories = async () => {
         try {
             setCategoriesLoading(true)
-            const result = await getCategories()
-
-            if (result.success && result.categories && result.categories.length > 0) {
-                setCategories(result.categories)
-            } else {
-                // Use fallback categories if none exist in database
-                setCategories(FALLBACK_CATEGORIES as Category[])
-            }
+            // Use business types for voice platform
+            setCategories(BUSINESS_TYPES as Category[])
         } catch (error) {
-            console.error("Error fetching categories:", error)
-            setCategories(FALLBACK_CATEGORIES as Category[])
-            toast.error("Using default categories due to loading error")
+            console.error("Error fetching business types:", error)
+            setCategories(BUSINESS_TYPES as Category[])
+            toast.error("Using default business types")
         } finally {
             setCategoriesLoading(false)
         }
@@ -128,9 +128,9 @@ export default function OnboardingPage() {
     const renderStep1 = () => (
         <Card className="max-w-7xl mx-auto">
             <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold">Choose Your Role</CardTitle>
+                <CardTitle className="text-2xl font-bold">Tell Us About Your Business</CardTitle>
                 <CardDescription>
-                    How would you like to participate in ValidateX?
+                    Help us customize Awaz.ai for your voice outreach needs
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
